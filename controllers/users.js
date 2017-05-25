@@ -1,6 +1,7 @@
 var User = require('../models/user')
 var jwt = require('jsonwebtoken')
 var bcrypt = require('bcrypt')
+require('dotenv').config()
 
 module.exports = {
 	signup : (req, res)=>{
@@ -20,7 +21,7 @@ module.exports = {
 		var user = req.user
 		var token = jwt.sign({
 			username : user.username
-		}, 'Secret', {expiresIn : '1h'})
+		}, process.env.JWT_SECRET, {expiresIn : '1h'})
 
 		res.send({
 			token : token,

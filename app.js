@@ -5,6 +5,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const helperPassport = require('./helpers/passport')
 
+
 mongoose.Promise = require('bluebird');
 mongoose.connect('mongodb://localhost/group-1', ()=>{
 	console.log('Mongodb success connect')
