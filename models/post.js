@@ -1,10 +1,12 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var userSchema = new Schema({
+var postSchema = new Schema({
 	content : {type: String, required:true},
-	poster_id:[{ type: Schema.Types.ObjectId, ref: 'User' }]
+	coordinate: String,
+	tweet_id : {type: String, required:true},
+	poster_username: {type: String, required:true}
 }, {timestamps:true})
 
-var User = mongoose.model('User', userSchema)
-module.exports = User
+var Post = mongoose.model('Post', postSchema)
+module.exports = Post
