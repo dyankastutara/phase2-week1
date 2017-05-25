@@ -1,0 +1,25 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <form action="/api/signup" method="post">
+    <input id="coordinate" type="hidden" name="coordinate">
+    <input type="submit" value="Get coordinate">
+    </form>
+    <script>
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          coordinate.value = "Geolocation is not supported by this browser.";
+        }
+      }
+
+      function showPosition(position) {
+        coordinate.value = `${position.coords.latitude},${position.coords.longitude}`
+      }
+      getLocation()
+    </script>
+  </body>
+</html>
