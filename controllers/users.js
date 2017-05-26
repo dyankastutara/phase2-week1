@@ -34,18 +34,17 @@ module.exports = {
 	  if(user.hasOwnProperty("message")){
 	    res.send(user.message)
 	  } else {
-		var token = jwt.sign({
-			id : user._id,
-			name : user.name,
-			username : user.username,
-			role : user.role
-		}, process.env.JWT_SECRET, {expiresIn : '1h'})
-
-		res.send({
-			token : token,
-			msg : user.msg
-		})
-	}
+			var token = jwt.sign({
+				id : user._id,
+				name : user.name,
+				username : user.username,
+				role : user.role
+			}, process.env.JWT_SECRET, {expiresIn : '1h'})
+			res.send({
+				token : token,
+				msg : user.msg
+			})
+		}
 	},
 	delete : (req, res)=>{
 		User.remove({_id : req.params.id})
