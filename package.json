@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dyankastutara/phase2-week1#readme",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "dotenv": "^4.0.0",
     "express": "^4.15.3",

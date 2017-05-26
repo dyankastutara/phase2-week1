@@ -35,12 +35,12 @@ module.exports = {
       process.env.accessTokenSecret, //test user secret
       function (e, data){
         if (e) console.error(e);
-        next(data);
+        callback(data);
       });
-  }
-  delete: function(id, callback)=>{
+  },
+  delete: function(id, callback){
     oauth.post(
-      `https://api.twitter.com/1.1/statuses/destroy/:${id}.json`,
+      `https://api.twitter.com/1.1/statuses/destroy/${id}.json`,
       process.env.accessToken,
       process.env.accessTokenSecret,
       id,
@@ -54,7 +54,7 @@ module.exports = {
       }
     );
   },
-  retwett: function(id, callback)=>{
+  retwett: function(id, callback){
     oauth.post(
       `https://api.twitter.com/1.1/statuses/retweet/:${id}.json`,
       process.env.accessToken,
@@ -69,5 +69,33 @@ module.exports = {
         }
       }
     );
+  },
+  trend: function(callback){
+    oauth.get(
+      'https://api.twitter.com/1.1/trends/user_timeline.json',
+      process.env.accessToken,
+      process.env.accessTokenSecret,
+      (e, data)=>{
+        if(e){
+          console.log(e);
+        } else {
+          callback(data);
+        }
+      }
+    )
+  },
+  search: function(username, callback){
+    oauth.get(
+      'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name='+username+'&count=4',
+      process.env.accessToken,
+      process.env.accessTokenSecret,
+      (e, data)=>{
+        if(e){
+          console.log(e);
+        } else {
+          callback(data)
+        }
+      }
+    )
   }
 }
