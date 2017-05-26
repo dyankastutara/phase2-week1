@@ -23,7 +23,7 @@ module.exports = {
 		        	res.send(error)
 		        }else{
 		        	var parse = JSON.parse(data)
-		        	var tweet_id = parse.id
+		        	var tweet_id = parse.id_str
 						  var createPost = new Post({
 								content : req.body.content,
 								latitude: req.body.latitude,
@@ -71,22 +71,25 @@ module.exports = {
 	},
 	deletePost:(req,res)=>{
 		// let decoded = jwt.verify(req.headers.token,'Secret')
-	  Post.findById(req.params.id,(err,post)=>{
+	  Post.findById(req.body.id,(err,post)=>{
 	    if(!err){
 				//insert tweet destroy here, parameternya (post.tweet_id)
 				if(req.decoded.id==post.user_id) {
+					console.log(post.tweet_id)
+					console.log(post.tweet_id.slice(1,-1))
 				twitt.getOauth(oauth => {
 			    oauth.post(
-				    `https://api.twitter.com/1.1/statuses/destroy/${Number(post.tweet_id)}.json`,
+				    `https://api.twitter.com/1.1/statuses/destroy/${post.tweet_id}.json`,
 			      process.env.ACCESS_TOKEN, //test user token
 			      process.env.TOKEN_SECRET, //test user secret
-			      Number(post.tweet_id),
+			      post.tweet_id,
 			      'id',
 			      function(e, data){
 			        if(e){
 			          res.send(e);
 			        } else {
-				          Post.remove({_id:req.params.id})
+			        	console.log("sukses delet")
+				          Post.remove({_id:req.body.id})
 						      .then(result=>{
 								    res.send(result)
 								  })
@@ -101,7 +104,7 @@ module.exports = {
 					res.send('You are not authorized')
 				}
 	    } else {
-	      res.send(`no post with id ${req.params.id}`)
+	      res.send(`no post with id ${req.body.id}`)
 	    }
 	  })
 	},

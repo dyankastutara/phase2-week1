@@ -167,13 +167,14 @@ var app = new Vue({
     },
     deletePost : function(id){
       token = localStorage.getItem('token')
-      axios.delete(`http://localhost:3000/api/posts/${id}`,{
-        token : token
+      axios.post(`http://localhost:3000/api/posts/delete`,{
+        token : token,
+        id : id
       })
       .then(() =>{
         console.log(id)
         // alert('data Deleted')
-        location.reload()
+        // location.reload()
       })
       .catch(err =>{
         console.log(err)
