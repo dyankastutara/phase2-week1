@@ -3,7 +3,10 @@ var Schema = mongoose.Schema
 
 var postSchema = new Schema({
 	content : {type: String, required:true},
-	coordinate: String,
+	latitude: String,
+	longitude: String,
+	jalan : String,
+	kota : String,
 	tweet_id : {type: String, required:true},
 	user_id: {type: Schema.Types.ObjectId, ref: 'User' }
 }, {timestamps:true})

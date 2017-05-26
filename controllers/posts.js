@@ -1,47 +1,53 @@
 var Post = require('../models/post');
 var twitt = require('../models/twitt')
 var jwt = require('jsonwebtoken')
+var axios = require('axios')
 
 module.exports = {
 	create:(req,res)=>{
 		// let decoded = jwt.verify(req.headers.token,'Secret')
-		//insert tweet update status via API here, pokoknya tujuannya supaya dapet id tweet
-  res.send(req.body)
-		
-		twitt.getOauth(oauth => {
-	    oauth.post(
-	      'https://api.twitter.com/1.1/statuses/update.json?status='+req.body.content+'\n\nPosted By '+req.decoded.name,
-	      process.env.ACCESS_TOKEN, //test user token
-	      process.env.TOKEN_SECRET, //test user secret
-	      req.body.content+'\n\nPosted By '+req.decoded.name,
-	      'text',
-	      function (error, data){
-	        if (error){
-	        	res.send(error)
-	        }else{
-	        	var parse = JSON.parse(data)
-	        	var tweet_id = parse.id
-					  var createPost = new Post({
-							content : req.body.content,
-							coordinate: req.body.coordinate,
-							tweet_id : tweet_id, // pokoknya ini diambil dari return API status update twitter
-							user_id : req.decoded.id
-						})
-						createPost.save((err, result)=>{
-							if (!err){
-								res.send(result)
-							}else{
-								res.send(err)
-							}
-						})
-	        }
-	      });
-	  })
-
+		//insert tweet update status via API here, pokoknya tujuannya supaya dapet id tweet		
+		axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${req.body.latitude},${req.body.longitude}&key=AIzaSyAxtJIbqd0utMpfuxGWCqA1Ui8wVGguEP0`)
+		.then(response=>{
+			var jalan = response.data.results[0].address_components[6].long_name;
+			var kota = response.data.results[2].address_components[0].long_name;
+			twitt.getOauth(oauth => {
+		    oauth.post(
+		      'https://api.twitter.com/1.1/statuses/update.json?status='+req.body.content+'\n\nPosted By '+req.decoded.name+'\nFrom '+jalan+' '+kota,
+		      process.env.ACCESS_TOKEN, //test user token
+		      process.env.TOKEN_SECRET, //test user secret
+		      req.body.content+'\n\nPosted By '+req.decoded.name+'\nFrom '+jalan+' '+kota,
+		      'text',
+		      function (error, data){
+		        if (error){
+		        	res.send(error)
+		        }else{
+		        	var parse = JSON.parse(data)
+		        	var tweet_id = parse.id
+						  var createPost = new Post({
+								content : req.body.content,
+								latitude: req.body.latitude,
+								longtitude : req.body.longitude,
+								jalan : jalan,
+								kota : kota,
+								tweet_id : tweet_id, // pokoknya ini diambil dari return API status update twitter
+								user_id : req.decoded.id
+							})
+							createPost.save((err, result)=>{
+								if (!err){
+									res.send(result)
+								}else{
+									res.send(err)
+								}
+							})
+		        }
+		     })
+		  })
+		})
 	},
 	read:(req,res)=>{
 		if(req.decoded){
-			Post.find({})
+		  Post.find({})
 		  .sort({createdAt:-1})
 		  .populate('user_id')
 		  .then(posts=>{
@@ -51,7 +57,7 @@ module.exports = {
 		  	res.send(err)
 		  })	
 		}else{
-			Post.find({})
+		  Post.find({})
 		  .sort({createdAt:-1})
 		  .populate('user_id')
 		  .then(posts=>{
@@ -62,20 +68,35 @@ module.exports = {
 		  })
 		}
 	},
-	delete:(req,res)=>{
+	deletePost:(req,res)=>{
+		console.log("Ini delete")
 		// let decoded = jwt.verify(req.headers.token,'Secret')
 	  Post.findById(req.params.id,(err,post)=>{
 	    if(!err){
 				//insert tweet destroy here, parameternya (post.tweet_id)
 				if(req.decoded.id==post.user_id) {
+				  // oauth.post(
+		    //    `https://api.twitter.com/1.1/statuses/destroy/${post.tweet_id}.json`,
+		    //    process.env.accessToken,
+		    //    process.env.accessTokenSecret,
+		    //    post.tweet_id,
+		    //    'id',
+		    //    function(e, data){
+		    //      if(e){
+		    //        console.log(e);
+		    //      } else {
+		    //        callback(data);
+		    //      }
+		    //    }
+		    //   );
 					console.log(post.tweet_id)
 					twitt.getOauth(oauth => {
-				    oauth.delete(
+				    oauth.post(
 					    `https://api.twitter.com/1.1/statuses/destroy/${post.tweet_id}.json`,
 				      process.env.ACCESS_TOKEN, //test user token
 				      process.env.TOKEN_SECRET, //test user secret
-				      // post.tweet_id,
-				      // 'id_str',
+				      post.tweet_id,
+				      'id',
 				      function(e, data){
 				        if(e){
 				          res.send(e);
@@ -117,3 +138,9 @@ module.exports = {
 	  })
 	}
 }
+
+  // axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${req.body.coordinate}&key=AIzaSyAxtJIbqd0utMpfuxGWCqA1Ui8wVGguEP0`)
+  // .then(response=>{
+  //   res.send({jalan:response.data.results[1].address_components[0].long_name, kota:response.data.results[2].address_components[0].long_name})
+  //   // res.send(JSON.stringify(response.data, null, 2))
+  // })
