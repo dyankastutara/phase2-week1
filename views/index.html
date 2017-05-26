@@ -43,7 +43,7 @@
               <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" v-model="password">
             </div>
             <button class="btn btn-default" v-on:click="signin">Signin</button>
-            <button class="btn btn-default">Signup</button>
+            <a class="btn btn-default" href="./signup.html">Signup</a>
           <hr>
         </div>
         <div class="col-md-3" v-else>
@@ -166,18 +166,18 @@ var app = new Vue({
       location.reload()
     },
     deletePost : function(id){
-      axios.delete('http://localhost:3000/api/posts/${id}',{
-          token : localStorage.getItem('token')
-        })
+      token = localStorage.getItem('token')
+      axios.delete(`http://localhost:3000/api/posts/${id}`,{
+        token : token
+      })
       .then(() =>{
-        console.log(this.id)
-        alert('data Deleted')
-        // location.reload()
+        console.log(id)
+        // alert('data Deleted')
+        location.reload()
       })
       .catch(err =>{
         console.log(err)
       })
-      console.log(id)
     },
     post : function(){
       var self = this
@@ -203,7 +203,7 @@ var app = new Vue({
     },
     voice : function(){
       var self = this
-      if(self.user_id != ''){
+      if(localStorage.getItem('token')){
         var recognition = new SpeechRecognition();
         recognition.lang = 'id-ID';
         recognition.interimResults = false;

@@ -46,6 +46,7 @@ module.exports = {
 		})
 	},
 	read:(req,res)=>{
+		console.log(req.decoded)
 		if(req.decoded){
 		  Post.find({})
 		  .sort({createdAt:-1})
@@ -69,38 +70,22 @@ module.exports = {
 		}
 	},
 	deletePost:(req,res)=>{
-		console.log("Ini delete")
 		// let decoded = jwt.verify(req.headers.token,'Secret')
 	  Post.findById(req.params.id,(err,post)=>{
 	    if(!err){
 				//insert tweet destroy here, parameternya (post.tweet_id)
 				if(req.decoded.id==post.user_id) {
-				  // oauth.post(
-		    //    `https://api.twitter.com/1.1/statuses/destroy/${post.tweet_id}.json`,
-		    //    process.env.accessToken,
-		    //    process.env.accessTokenSecret,
-		    //    post.tweet_id,
-		    //    'id',
-		    //    function(e, data){
-		    //      if(e){
-		    //        console.log(e);
-		    //      } else {
-		    //        callback(data);
-		    //      }
-		    //    }
-		    //   );
-					console.log(post.tweet_id)
-					twitt.getOauth(oauth => {
-				    oauth.post(
-					    `https://api.twitter.com/1.1/statuses/destroy/${post.tweet_id}.json`,
-				      process.env.ACCESS_TOKEN, //test user token
-				      process.env.TOKEN_SECRET, //test user secret
-				      post.tweet_id,
-				      'id',
-				      function(e, data){
-				        if(e){
-				          res.send(e);
-				        } else {
+				twitt.getOauth(oauth => {
+			    oauth.post(
+				    `https://api.twitter.com/1.1/statuses/destroy/${Number(post.tweet_id)}.json`,
+			      process.env.ACCESS_TOKEN, //test user token
+			      process.env.TOKEN_SECRET, //test user secret
+			      Number(post.tweet_id),
+			      'id',
+			      function(e, data){
+			        if(e){
+			          res.send(e);
+			        } else {
 				          Post.remove({_id:req.params.id})
 						      .then(result=>{
 								    res.send(result)
@@ -121,7 +106,6 @@ module.exports = {
 	  })
 	},
 	update:(req,res)=>{
-		// let decoded = jwt.verify(req.headers.token,'Secret')
 	  Post.findById(req.params.id,(err,post)=>{
 			if(!err){
 				if(req.decoded.id==post.user_id) {
@@ -138,9 +122,3 @@ module.exports = {
 	  })
 	}
 }
-
-  // axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${req.body.coordinate}&key=AIzaSyAxtJIbqd0utMpfuxGWCqA1Ui8wVGguEP0`)
-  // .then(response=>{
-  //   res.send({jalan:response.data.results[1].address_components[0].long_name, kota:response.data.results[2].address_components[0].long_name})
-  //   // res.send(JSON.stringify(response.data, null, 2))
-  // })

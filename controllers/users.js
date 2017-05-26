@@ -7,7 +7,7 @@ module.exports = {
 	signup : (req, res)=>{
 		// User.findOne({username : req.body.username}, (err, result)=>{
 		// 	if(err){
-		// 		res.send("username is exists")
+		// 		res.send(err)
 		// 	}else{
 		// 		if(result.username === req.body.username){
 		// 			res.send("Username is exists")
