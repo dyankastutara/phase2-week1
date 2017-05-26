@@ -33,7 +33,8 @@
 
     <div class="container" style="padding-top : 55px">
       <div class="row">
-        <div class="col-md-3" v-if="authorize === false">
+        <div class="col-md-3">
+          <form>
             <div class="form-group">
               <label for="exampleInputEmail1">Username</label>
               <input type="text" class="form-control" id="exampleInputEmail1" placeholder="username" v-model="username">
@@ -44,23 +45,16 @@
             </div>
             <button class="btn btn-default" v-on:click="signin">Signin</button>
             <button class="btn btn-default">Signup</button>
+          </form>
           <hr>
         </div>
-        <div class="col-md-3" v-else>
-            <div class="form-group" align="center" style="padding-top: 30px;">
-              <label for="exampleInputEmail1">{{name}}</label>
-            </div>
-            <div class="form-group" align="center">
-              <button class="btn btn-default" v-on:click="signout">Signout</button>
-            </div>
-          <hr>
-        </div>
-
         <div class="col-md-9">
-            <div class="form-group" style="padding-top: 25px;">
-              <input type="text" class="form-control" id="exampleInputEmail1" v-model="content">
+          <form style="padding-top: 25px;">
+            <div class="form-group">
+              <input type="text" class="form-control" id="exampleInputEmail1">
             </div>
             <button class="btn btn-primary" v-on:click = "post">Post</button>
+          </form>
           <hr>
           <div class="panel panel-default" v-for="(list, index) in listPosts"  style="padding-top: 5px;">
             <div class="row">
@@ -68,13 +62,9 @@
           		  <div class="col-md-9">
                 <small>Posted By {{list.user_id.name}}</small> | <small>Posted At : {{list.createdAt}}</small>
                 <div align="justify">{{list.content}}</div>
-                <div v-if="list.user_id._id === user_id">
-                  <button class="btn btn-danger" ><span class="glyphicon glyphicon-trash"></span></button>
-                </div>
-                <div v-else>
-                  
-                </div>
-
+                  <div>
+  	              <button class="btn btn-danger" ><span class="glyphicon glyphicon-trash"></span></button>
+                  </div>
   	            </div>
   	            <div class="col-md-3">
 
@@ -84,6 +74,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </body>
@@ -94,80 +85,46 @@ var app = new Vue({
     username : '',
     password : '',
     listPosts : [],
-    content : '',
+    posting : '',
     name : '',
-    user_id : '',
-    alert : false,
-    authorize : false
+    authorize : true,
+    token : false
   },
   methods : {
     getAll : function(){
+      axios.get('http://localhost:3000/api/posts/validate')
+      .then((result)=>{
+        this.listPosts = result.data
+        console.log(this.listPosts)
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+    },
+    getToken : function(){
       if(localStorage.getItem('token')){
-        axios.post('http://localhost:3000/api/posts/validate',{
-          token : localStorage.getItem('token')
-        })
-        .then((result)=>{
-          this.listPosts = result.data.posts
-          this.name = result.data.decoded.name
-          this.authorize = true
-          this.user_id = result.data.decoded.id
-      navigator.geolocation.getCurrentPosition(showPosition);
-
-      function showPosition(position) {
-        var latitude = position.coords.latitude
-        var longitude = position.coords.longitude
-        console.log(`${latitude}\n${longitude}`) 
-      }
-
-      console.log(navigator.geolocation.getCurrentPosition.coords());
-
-        })
-        .catch((err)=>{
-          console.log(err)
-        })
-      }else{
-        axios.get('http://localhost:3000/api/posts')
-        .then((result)=>{
-          this.listPosts = result.data
-          localStorage.clear()
-        })
-        .catch((err)=>{
-          console.log(err)
-        })
+        this.name = 'Dyan'
       }
     },
     signin : function(){
-      var self = this
+      var username = this.username
+      var password = this.password
       axios.post('http://localhost:3000/api/signin',{
-        username : self.username,
-        password : self.password
+        username : username,
+        password : password
       })
       .then((response)=>{
+        console.log(response.data.token)
         localStorage.setItem("token", response.data.token);
-        location.reload()
+        window.location.href = 'http://127.0.0.1:8080/home.html'
       })
     },
-    signout : function(){
-      localStorage.clear()
-      location.reload()
-    },
     post : function(){
-      var self = this
-      if(localStorage.getItem('token')){
-        axios.post('http://localhost:3000/api/post',{
-          content : self.content,
-          coordinate : self.password
-        })
-        .then((response)=>{
-          location.reload()
-        })
-      }else{
       alert('You Must Login')
-        self.alert = true
-      }
     }
   },
   created (){
+    this.getToken()
     this.getAll()
   }
 })
