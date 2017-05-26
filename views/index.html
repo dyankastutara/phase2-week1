@@ -68,19 +68,19 @@
               <div class="panel-body">
           		  <div class="col-md-9">
                 <small>Posted By {{list.user_id.name}}</small> | <small>Posted At : {{list.createdAt}}</small>
-                <div align="justify">{{list.content}}</div>
-                <div align="justify">{{list.jalan}}</div>
+                <div align="justify">{{list.content}}</div><br>
+                <div align="justify">From {{list.jalan}}, {{list.kota}} </div>
                 <div v-if="list.user_id._id === user_id">
                   <button class="btn btn-danger" v-on:click ="deletePost(list._id)"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
                 <div v-else>
-                  
+
                 </div>
 
   	            </div>
   	            <div class="col-md-3">
 
-  	            </div>	              
+  	            </div>
               </div>
             </div>
           </div>
@@ -105,8 +105,8 @@ function getLocation() {
 function showPosition(position) {
   var latitude = position.coords.latitude
   var longitude = position.coords.longitude
-  localStorage.setItem('lat',`${latitude}`)   
-  localStorage.setItem('long',`${longitude}`)      
+  localStorage.setItem('lat',`${latitude}`)
+  localStorage.setItem('long',`${longitude}`)
 }
 
 var app = new Vue({
@@ -132,7 +132,7 @@ var app = new Vue({
           this.listPosts = result.data.posts
           this.name = result.data.decoded.name
           this.authorize = true
-          this.user_id = result.data.decoded.id      
+          this.user_id = result.data.decoded.id
           getLocation()
         })
         .catch((err)=>{
@@ -177,9 +177,9 @@ var app = new Vue({
         id : id
       })
       .then(() =>{
-        console.log(id)
-        // alert('data Deleted')
-        // location.reload()
+        // console.log(id)
+        alert('data Deleted')
+        location.reload()
       })
       .catch(err =>{
         console.log(err)
@@ -219,11 +219,13 @@ var app = new Vue({
         recognition.onresult = function(event) {
           var speechResult = event.results[0][0].transcript;
           self.content = speechResult
-        }
-        recognition.onspeechend = function() {
           recognition.stop();
           self.post()
         }
+        // recognition.onspeechend = function() {
+        //   recognition.stop();
+        //   self.post()
+        // }
         recognition.onerror = function(event) {
           alert('Error.. Try Again')
         }

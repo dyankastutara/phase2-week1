@@ -6,14 +6,14 @@ var axios = require('axios')
 module.exports = {
 	create:(req,res)=>{
 		// let decoded = jwt.verify(req.headers.token,'Secret')
-		//insert tweet update status via API here, pokoknya tujuannya supaya dapet id tweet		
+		//insert tweet update status via API here, pokoknya tujuannya supaya dapet id tweet
 		axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${req.body.latitude},${req.body.longitude}&key=AIzaSyAxtJIbqd0utMpfuxGWCqA1Ui8wVGguEP0`)
 		.then(response=>{
-			var jalan = response.data.results[0].address_components[6].long_name;
-			var kota = response.data.results[2].address_components[0].long_name;
+			var jalan = response.data.results[0].address_components[5].long_name;
+			var kota = response.data.results[1].address_components[0].long_name;
 			twitt.getOauth(oauth => {
 		    oauth.post(
-		      'https://api.twitter.com/1.1/statuses/update.json?status='+req.body.content+'\n\nPosted By '+req.decoded.name+'\nFrom '+jalan+' '+kota,
+		      'https://api.twitter.com/1.1/statuses/update.json?status='+req.body.content+'\n\nPosted By '+req.decoded.name+'\nFrom '+jalan+', '+kota,
 		      process.env.ACCESS_TOKEN, //test user token
 		      process.env.TOKEN_SECRET, //test user secret
 		      req.body.content+'\n\nPosted By '+req.decoded.name+'\nFrom '+jalan+' '+kota,
@@ -56,7 +56,7 @@ module.exports = {
 		  })
 		  .catch(err=>{
 		  	res.send(err)
-		  })	
+		  })
 		}else{
 		  Post.find({})
 		  .sort({createdAt:-1})
@@ -88,7 +88,7 @@ module.exports = {
 			        if(e){
 			          res.send(e);
 			        } else {
-			        	console.log("sukses delet")
+			        	console.log("sukses delete")
 				          Post.remove({_id:req.body.id})
 						      .then(result=>{
 								    res.send(result)
