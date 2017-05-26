@@ -142,6 +142,7 @@ var app = new Vue({
         axios.get('http://localhost:3000/api/posts')
         .then((result)=>{
           this.listPosts = result.data
+          this.authorize = false
           localStorage.clear()
         })
         .catch((err)=>{

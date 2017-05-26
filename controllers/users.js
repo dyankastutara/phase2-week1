@@ -31,6 +31,9 @@ module.exports = {
 	},
 	signin : (req, res)=>{
 		var user = req.user
+	  if(user.hasOwnProperty("message")){
+	    res.send(user.message)
+	  } else {
 		var token = jwt.sign({
 			id : user._id,
 			name : user.name,
@@ -42,6 +45,7 @@ module.exports = {
 			token : token,
 			msg : user.msg
 		})
+	}
 	},
 	delete : (req, res)=>{
 		User.remove({_id : req.params.id})
