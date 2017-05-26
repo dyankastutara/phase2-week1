@@ -26,5 +26,15 @@ module.exports = {
 			token : token,
 			msg : user.msg
 		})
+	},
+
+	update : (req, res)=>{
+		var user = req.user
+		var token = jwt.sign({
+			Username: username
+		}, 'Secret', {expiresIn : '1h'}
+	})
+
+
 	}
 }
